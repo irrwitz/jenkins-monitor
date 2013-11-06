@@ -19,18 +19,30 @@
       <div class="control-group">
         <label class="control-label" for="jenkins-url">Jenkins Url: </label>
         <div class="controls">
-          <input type="text" name="jenkins-url" placeholder="Input Jenkins URL here">
+          <input id="jenkins-url" type="text" name="jenkins-url" placeholder="Input Jenkins URL here">
           <span class="save-info"></span>
         </div>
       </div>
       <div class="control-group">
         <label class="control-label" for="refresh-time">Refresh interval (min)</label>
         <div class="controls">
-          <input type="range" name="refresh-time" min="5" max="30" step="5" value="5">
+          <input id="refresh-time" type="range" name="refresh-time" min="5" max="30" step="5" value="5">
           <output name="refresh-time-value" for="refresh-time"></output>
           <span class="save-info"></span>
         </div>
       </div>
+        <div class="control-group">
+          <label class="control-label" for="job-filter">Job Filter: </label>
+          <div class="controls">
+            <input id="job-filter" type="text" name="job-filter" placeholder="Input job filter (exact match)">
+            <button id="add-job-filter" class="btn" >Add</button>
+          </div>
+        </div>
+	<div>
+	  <label class="control-label" for="active-filters">Active Filters </label>
+	  <div id="filter-jobs">
+	  </div>
+	</div>
     </fieldset>
   </form>
 
