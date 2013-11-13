@@ -33,6 +33,17 @@
                 $('#options-form input[name="' + name + '"]').val(val);
             }
         });
+
+        chrome.storage.local.get('job-filters', function(items) {
+            var filters = items['job-filters'];
+            var t = "<div><ul class='unstyled'>";
+            for (var i = 0; i < filters.length; i++) {
+                t += "<li>" + filters[i] + " <i class='icon-trash'></i>"  +"</li>\n";
+            }
+            t += "</ul></div>";
+            console.log(t);
+            $('#filter-jobs').html(t);
+        });
     }
 
     $(document).on('change', '#options-form #jenkins-url,#refresh-time ', function() {
@@ -66,7 +77,11 @@
                 callback();
             });
         });
+    });
 
+    $(document).on('click', '.icon-trash', function() {
+	var filter = $(this);
+	   // implement deleting
     });
     
         
