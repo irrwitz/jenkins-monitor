@@ -6,9 +6,13 @@
             var options = items['options'] || {},
             name;
 
+            // filter list entries are concatenated
+            // other values will be overwritten
             for (name in option) {
-                options[name] = option[name];
+                options[name] =  $.isArray(option[name]) ? 
+                    options[name].concat(option[name]) : option[name];
             }
+           
 
             chrome.storage.local.set({'options': options}, function() {
                 callback();
@@ -26,27 +30,21 @@
             var options = items['options'],
             name,
             val;
-
             for (name in options) {
                 val = options[name];
-
-                $('#options-form input[name="' + name + '"]').val(val);
             }
-        });
 
-        chrome.storage.local.get('job-filters', function(items) {
-            var filters = items['job-filters'];
-            var t = "<div><ul class='unstyled'>";
+            var filters = options['job-filters'];
+            var list = "<div><ul class='unstyled'>";
             for (var i = 0; i < filters.length; i++) {
-                t += "<li>" + filters[i] + " <i class='icon-trash'></i>"  +"</li>\n";
+                list += "<li><span>" + filters[i] + " </span><i class='icon-trash'></i>" + "</li>\n";
             }
-            t += "</ul></div>";
-            console.log(t);
-            $('#filter-jobs').html(t);
+            list += "</ul></div>";
+            $('#filter-jobs').html(list);
         });
     }
 
-    $(document).on('change', '#options-form #jenkins-url,#refresh-time ', function() {
+    $(document).on('change', '#jenkins-url,#refresh-time ', function() {
         var input = $(this),
         option = {},
         name = input.attr('name'),
@@ -66,22 +64,34 @@
         });
     });
 
+    // adds a job filter (a name) to the array 'job-filter'
+    // on the options object
     $(document).on('click', '#add-job-filter', function() {
         var input = $('#job-filter'),
-        value = input.val();
-        
-        chrome.storage.local.get('job-filters', function(items) {
-            var filters = items['job-filters'] || [];
-            filters.push(value);
-            chrome.storage.local.set({'job-filters': filters}, function() {
-                callback();
-            });
+        value = []; 
+        value.push(input.val());
+        var option = {};
+        option['job-filters'] = value;
+        save_options(option, function() { 
+            restore_options(); 
         });
     });
 
+    // removes a job filter (a name) from the array 'job-filter'
+    // on the options object. this method doesn't use the
+    // save_options method because the arrays are concatenated!
     $(document).on('click', '.icon-trash', function() {
-	var filter = $(this);
-	   // implement deleting
+	    var filter = $(this);
+        var deletionElement = filter.parent().find('span');
+        chrome.storage.local.get('options', function(items) {
+            var filters = items['options']['job-filters'];
+            filters.splice(filters.indexOf(deletionElement.text().trim()), 1);
+            var options = {};
+            items.options['job-filters'] = filters;
+            chrome.storage.local.set(items, function() { 
+                restore_options(); 
+            });
+        })   
     });
     
         
